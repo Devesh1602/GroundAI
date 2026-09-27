@@ -1,7 +1,6 @@
 # GroundAI
 
 **A multimodal maintenance assistant that knows when to answer and when to escalate.**
-Theme 2: Multimodal Maintenance Intelligence Agent.
 
 GroundAI reads equipment manuals, technical tables, raster engineering drawings and scanned service reports, and answers technician questions with page-level citations and highlighted evidence. Before it writes anything, it scores the evidence. Weak or missing evidence produces an escalation ticket and a logged documentation gap instead of a guess.
 
@@ -13,17 +12,17 @@ GroundAI reads equipment manuals, technical tables, raster engineering drawings 
 
 ## What it does
 
-- **Document ingestion.** pdfplumber layout parsing (headings, paragraphs, numbered procedures), ruled tables split into one chunk per row with the header attached, contextual chunk headers.
-- **OCR for scans.** OpenCV deskew + Tesseract with per-line confidence and bounding boxes. OCR tokens are corrected against identifiers found in the born-digital documents (on the demo drawing `RO]` becomes `RO1`; the rule also maps e.g. `FQ001` to `F0001`).
-- **Drawing understanding (computer vision).** OpenCV finds component boxes and wires on a raster single-line diagram, OCR reads each box and wire label, and the wiring becomes graph edges (`Q104 MCCB 100 A -> VFD-104 via 3 x 50 mm2 Cu`).
-- **Knowledge graph.** Assets, models, fault codes, parameters, terminals, parts and components with typed edges (`connected_to`, `has_model`, `variant_of`, `documents`, `references`). A question about pump P-104 is expanded along P-104 -> M-104 -> VFD-104 -> HX-500-055 -> HX-500, which is how the drive manual gets searched for a pump question. Exports to Neo4j.
-- **Hybrid retrieval.** BM25 (exact codes, part numbers) + dense vectors (LSA by default; sentence-transformers + FAISS optional), reciprocal rank fusion, entity boosts weighted by how much of the question a passage answers, per-document diversity so independent sources can corroborate.
-- **Confidence gate.** A calibrated score from question coverage (weighted by term specificity), named-equipment match, semantic and keyword strength, number of independent sources, OCR quality and cross-document value conflicts. Hard rules: unknown equipment or codes and requests to bypass protection always escalate.
-- **Answers.** Extractive answers quoted from the sources with `[n]` citations, procedures kept in order, a safety/lockout line whenever the technician is about to act. Optional LLM wording (Anthropic, any OpenAI-compatible endpoint, or Claude inside the artifact), with every generated line checked against the passage it cites.
-- **Escalation and gap log.** Tickets routed to a senior technician, grouped into documentation gaps (by missing equipment or topic). SQLite by default, PostgreSQL via `DATABASE_URL`.
-- **Field and Research modes.** Short step-first answers for the plant floor, or longer multi-document answers with more evidence.
+- **Document ingestion** pdfplumber layout parsing (headings, paragraphs, numbered procedures), ruled tables split into one chunk per row with the header attached, contextual chunk headers.
+- **OCR for scans** OpenCV deskew + Tesseract with per-line confidence and bounding boxes. OCR tokens are corrected against identifiers found in the born-digital documents (on the demo drawing `RO]` becomes `RO1`; the rule also maps e.g. `FQ001` to `F0001`).
+- **Drawing understanding (computer vision)** OpenCV finds component boxes and wires on a raster single-line diagram, OCR reads each box and wire label, and the wiring becomes graph edges (`Q104 MCCB 100 A -> VFD-104 via 3 x 50 mm2 Cu`).
+- **Knowledge graph** Assets, models, fault codes, parameters, terminals, parts and components with typed edges (`connected_to`, `has_model`, `variant_of`, `documents`, `references`). A question about pump P-104 is expanded along P-104 -> M-104 -> VFD-104 -> HX-500-055 -> HX-500, which is how the drive manual gets searched for a pump question. Exports to Neo4j.
+- **Hybrid retrieval** BM25 (exact codes, part numbers) + dense vectors (LSA by default; sentence-transformers + FAISS optional), reciprocal rank fusion, entity boosts weighted by how much of the question a passage answers, per-document diversity so independent sources can corroborate.
+- **Confidence gate** A calibrated score from question coverage (weighted by term specificity), named-equipment match, semantic and keyword strength, number of independent sources, OCR quality and cross-document value conflicts. Hard rules: unknown equipment or codes and requests to bypass protection always escalate.
+- **Answers** Extractive answers quoted from the sources with `[n]` citations, procedures kept in order, a safety/lockout line whenever the technician is about to act. Optional LLM wording (Anthropic, any OpenAI-compatible endpoint, or Claude inside the artifact), with every generated line checked against the passage it cites.
+- **Escalation and gap log** Tickets routed to a senior technician, grouped into documentation gaps (by missing equipment or topic). SQLite by default, PostgreSQL via `DATABASE_URL`.
+- **Field and Research modes** Short step-first answers for the plant floor, or longer multi-document answers with more evidence.
 
-## Results (demo corpus)
+## Results
 
 | Set | Answer accuracy | Escalation recall | Unsafe answers | False escalations | Conflicts found |
 |---|---|---|---|---|---|
@@ -73,6 +72,5 @@ tests/                 Python/JS parity, API handlers
 docs/                  technical documentation, project summary, demo video script
 ```
 
-## Demo corpus
 
 Five fictional documents for a raw-water pump station, built to exercise each format: an AC drive service manual (HX-500), a centrifugal pump O&M manual (CP-300), a service bulletin that supersedes a lubrication interval in the pump manual, a raster single-line and control wiring drawing (DWG E-104), and a skewed, noisy scanned field service report (SR-2291). All equipment, manufacturers and people are invented.
