@@ -1,0 +1,17 @@
+fastapi>=0.110
+uvicorn[standard]>=0.27
+python-multipart>=0.0.9
+pydantic>=2.5
+httpx>=0.26
+numpy>=1.26
+pdfplumber>=0.11
+pypdfium2>=4.25
+pillow>=10.0
+pytesseract>=0.3.10
+opencv-python-headless>=4.8
+reportlab>=4.0          # only for scripts/make_corpus.py
+# optional
+# psycopg[binary]>=3.1        # DATABASE_URL=postgresql://...
+# sentence-transformers>=2.6  # GROUNDAI_EMBEDDER=neural
+# faiss-cpu>=1.8
+# neo4j>=5.18                 # scripts/export_neo4j.py --load
