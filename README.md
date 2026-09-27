@@ -6,7 +6,7 @@ GroundAI reads equipment manuals, technical tables, raster engineering drawings 
 
 | | |
 |---|---|
-| [Live](https://groundaai.netlify.app/)|
+| Live Deployed | [Live](https://groundaai.netlify.app/)|
 | API + web app | `docker compose up --build` then open http://localhost:8000 (API docs at `/docs`) |
 | Tests | `make test` (Python/JS parity on 44 questions x 2 modes, API handlers) |
 
