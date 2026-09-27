@@ -2,7 +2,7 @@
 
 ## 1. Architecture
 
-
+```
             ┌───────────────── INGESTION (Python) ─────────────────┐
 PDF / image │ born-digital page ─ pdfplumber: words, fonts, tables  │
             │ image-only page  ─ OpenCV deskew ─ Tesseract lines    │──► chunks (text, table, table_row,
@@ -13,8 +13,7 @@ chunks ──► BM25 index ─┐
        ──► dense index ├─► hybrid retrieval ─► confidence gate ─┬─► answer (extractive or LLM + verification)
        ──► knowledge   ┘      (RRF + entity                     └─► escalate: ticket + documentation gap
            graph               + graph expansion)
-
-
+```
 Two runtimes share one algorithm:
 
 | Runtime | Used for | Notes |
